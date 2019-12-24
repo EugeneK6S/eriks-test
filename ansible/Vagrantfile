@@ -1,0 +1,21 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+  # config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+  config.vm.provider 'virtualbox' do |v|
+    v.name = "eriks.test"
+    v.memory = 1024
+    v.cpus = 2
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--ioapic", "on"]
+  end
+
+  config.vm.provision "ansible_local" do |provisioner|
+    provisioner.compatibility_mode = "2.0"
+    provisioner.vault_password_file = "/vagrant/ansible-vault-password.yml"
+    provisioner.playbook = "/vagrant/mariadb/main.yml"
+    provisioner.galaxy_role_file = "/vagrant/mariadb/requirements.yml"
+  end
+
+
+end
